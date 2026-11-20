@@ -17,7 +17,7 @@
 
 ## 预览
 
-说明书封面、正文内页与源程序文档封面。正文各章都已写示范内容，编译即可出PDF。
+说明书封面、正文内页与源程序文档封面。仓库自带编译好的 `document.pdf` 和 `source-code.pdf`，克隆后可直接打开看成品；正文各章也已写示范内容，换成自己的软件后能重新编译。
 
 <p align="center">
   <img src="assets/handbook-cover.png" alt="说明书封面" width="280">
@@ -69,7 +69,7 @@ cd software-copyright-kit
 6. 编译两份PDF，检查每页行数。
 
 ```bash
-# 克隆后先生成代码副本（src_prod/ 不进Git，必须本地生成）
+# 换成你自己的代码后，重新生成去空行副本（仓库已自带一份 src_prod/）
 python softcopy-toolkit/init_code_copy.py
 
 cd software_copyright
@@ -77,7 +77,7 @@ bash ../softcopy-toolkit/compile.sh "$(pwd)/document.tex"
 bash ../softcopy-toolkit/compile.sh "$(pwd)/source-code.tex"
 ```
 
-`init_code_copy.py` 会生成 `src_prod/`（去空行的代码副本），源代码文档实际引用的就是它；`src/` 里的原始代码不会被改动。
+仓库自带一份编译好的 `document.pdf`、`source-code.pdf` 和去空行副本 `src_prod/`，克隆后不用先跑初始化脚本就能直接看成品、直接编译。换成自己的代码后，运行 `init_code_copy.py` 重新生成 `src_prod/`；`src/` 里的原始代码不会被改动。
 
 ## 目录结构
 
@@ -91,6 +91,9 @@ software-copyright-kit/
 │   ├── 1-introduction.tex … 7-appendix.tex  七个章节模板
 │   ├── images/               截图与架构图
 │   ├── src/                  开发源码（唯一开发源）
+│   ├── src_prod/             去空行副本（仓库自带，改代码后重新生成）
+│   ├── document.pdf          编译好的说明书示例
+│   ├── source-code.pdf       编译好的源程序文档示例
 │   └── materials/            application.md申请表 + facts.md事实清单 + architecture.mmd
 ├── softcopy-toolkit/         编译、行数统计、抽页、隐私检查、版本冻结
 ├── guidelines/               写作指南（总原则、各阶段、写作规范）

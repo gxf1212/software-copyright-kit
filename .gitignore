@@ -1,5 +1,4 @@
-# 编译产物
-*.pdf
+# 编译产物（示例PDF随仓库分发）
 *.aux
 *.log
 *.toc
@@ -14,8 +13,10 @@
 *.ind
 *.ilg
 
-# 代码副本：由 src/ 去空行生成，供 code_simplified.tex 引用
-software_copyright/src_prod/
+# 其他PDF忽略，但保留示例成品PDF供克隆后直接查看
+*.pdf
+!software_copyright/document.pdf
+!software_copyright/source-code.pdf
 
 # Python
 __pycache__/
