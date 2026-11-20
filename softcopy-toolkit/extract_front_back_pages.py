@@ -16,10 +16,10 @@ PAGE_MARKER = re.compile(r"第\s*\d+\s*页")
 def detect_cover_pages(reader: PdfReader) -> int:
     """Return the count of leading pages without a '第 N 页' marker.
 
-    Deposited PDFs produced by easybook carry a printed page marker on every
-    content page.  Leading pages without it are cover/front matter: they must
-    be kept in the submission but should not consume the 30 front-page quota,
-    otherwise the extracted file contains only 29 pages of actual code.
+    Used only with ``--auto-cover`` to build a preview copy.  Deposited PDFs
+    produced by easybook carry a printed page marker on every content page;
+    leading pages without it are cover/front matter.  The official deposit
+    should NOT include the cover, so this is opt-in.
     """
     count = 0
     for page in reader.pages:
@@ -46,14 +46,15 @@ def main() -> None:
     parser.add_argument(
         "--cover-pages",
         type=int,
-        default=None,
-        help="Leading cover/title pages kept but not counted toward --front-pages. "
-             "Default: auto-detect from the '第 N 页' page-number marker.",
+        default=0,
+        help="Leading cover/title pages kept but not counted toward --front-pages (default 0).",
     )
     parser.add_argument(
-        "--no-auto-cover",
+        "--auto-cover",
         action="store_true",
-        help="Disable automatic cover detection and treat all pages as content.",
+        help="Auto-detect leading cover/TOC pages and keep them. This produces a "
+             "preview copy with cover + 60 content pages; the official deposit "
+             "should use exactly the front/back page counts without the cover.",
     )
     args = parser.parse_args()
 
@@ -69,12 +70,12 @@ def main() -> None:
 
     reader = PdfReader(str(input_pdf))
     total_pages = len(reader.pages)
-    if args.cover_pages is not None:
+    if args.cover_pages:
         cover_pages = min(max(args.cover_pages, 0), total_pages)
-    elif args.no_auto_cover:
-        cover_pages = 0
-    else:
+    elif args.auto_cover:
         cover_pages = detect_cover_pages(reader)
+    else:
+        cover_pages = 0
     cover_pages = min(cover_pages, total_pages)
     available = total_pages - cover_pages
     front_end = cover_pages + min(max(args.front_pages, 0), available)

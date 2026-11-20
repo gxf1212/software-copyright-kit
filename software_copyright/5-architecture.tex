@@ -36,7 +36,7 @@
     edge/.style={->, >=Stealth, thick, gray!80},
     layer/.style={draw, dashed, rounded corners, inner sep=3mm, gray!60}
 ]
-\node[entry] (cli) {命令行入口\\python -m \Name};
+\node[entry] (cli) {命令行入口\\python -m demo\_tool};
 \node[entry, right=of cli] (web) {浏览器界面\\Streamlit};
 \node[proc, below=12mm of cli] (io) {io.py\\编码探测/读写};
 \node[proc, right=of io] (core) {core.py\\清洗/筛选};

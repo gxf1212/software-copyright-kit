@@ -11,9 +11,9 @@
 ### 1. 准备代码副本
 
 - 唯一开发源是 `software_copyright/src/`，不要直接改它。
-- 复制到提交副本：`cp -a src/. src_prod/`。
-- 去空行并统计：`python softcopy-toolkit/count_lines.py software_copyright/src_prod --remove-empty`。该脚本只在路径含 `software-copyright` 或 `software_copyright` 时允许改写。
-- 改完 `src/` 后必须重新复制并去空行，否则文档用的是旧代码。判断过期要先重新生成再比较，直接diff的差异大多是空行。
+- 运行初始化脚本生成提交副本：`python softcopy-toolkit/init_code_copy.py`。脚本只读取 `src/`，把去空行副本写到 `src_prod/`，不改动原始源码；Python多行字符串里的空行会保留，其他语言原样复制。
+- 副本已存在且非空时，脚本会拒绝覆盖，需加 `--force` 重新生成。
+- 改完 `src/` 后必须重新运行初始化脚本，否则源码文档用的是旧代码。判断是否过期要先重新生成再比较，直接 `diff src src_prod` 的差异大多是空行，不能据此判断。
 
 ### 2. 编辑code_simplified.tex
 

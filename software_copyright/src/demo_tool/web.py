@@ -33,7 +33,7 @@ def render_report(path: Path) -> None:
     """Display per-column completeness as a table."""
     header, rows = read_rows(path)
     data = [
-        {"列名": item.name, "总数": item.total, "非空": item.filled, "缺失": item.missing}
+        {"列名": item.name, "总数": item.total, "非空": item.filled, "缺失": item.missing, "不同值": item.distinct}
         for item in summarize(header, rows)
     ]
     st.table(data)

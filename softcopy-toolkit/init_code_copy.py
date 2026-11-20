@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Create the source-code copy used by code_simplified.tex.
 
-The original development source is copied into a generated directory with
-empty lines removed, so the source-code PDF stays compact.  The original is
-never modified.  For Python files, blank lines inside triple-quoted strings
-are preserved because deleting them changes the meaning of the code.
+The original development source is copied into a generated directory so the
+source-code PDF can reference a compact copy.  The original is never
+modified.  Blank lines are removed only from Python files (keeping blank
+lines inside triple-quoted strings); other languages are copied unchanged,
+because deleting blank lines there can change the meaning of the code.
 
 Usage (from the repository root):
     python softcopy-toolkit/init_code_copy.py
@@ -42,9 +43,15 @@ def multiline_string_lines(text: str) -> set[int]:
 
 
 def strip_empty_lines(text: str, extension: str) -> str:
-    """Remove blank lines, keeping blank lines inside Python multi-line strings."""
+    """Remove blank lines from Python files, preserving multi-line strings.
+
+    Non-Python files are returned unchanged: deleting blank lines there can
+    change the meaning (shell heredocs, JS template literals, etc.).
+    """
+    if extension != ".py":
+        return text
     lines = text.splitlines()
-    keep = multiline_string_lines(text) if extension == ".py" else set()
+    keep = multiline_string_lines(text)
     result = [line for index, line in enumerate(lines, start=1) if line.strip() or index in keep]
     return "\n".join(result) + "\n" if result else ""
 
@@ -63,7 +70,7 @@ def main() -> int:
     repo_root = Path(__file__).resolve().parent.parent
     parser.add_argument("--src", type=Path, default=repo_root / "software_copyright" / "src")
     parser.add_argument("--dst", type=Path, default=repo_root / "software_copyright" / "src_prod")
-    parser.add_argument("--keep-dst", action="store_true", help="Merge into an existing destination instead of replacing it")
+    parser.add_argument("--force", action="store_true", help="Replace an existing non-empty destination")
     args = parser.parse_args()
 
     src, dst = args.src.resolve(), args.dst.resolve()
@@ -73,8 +80,19 @@ def main() -> int:
     if src == dst or is_inside(dst, src) or is_inside(src, dst):
         print("ERROR: destination must be a separate directory outside the source tree", file=sys.stderr)
         return 2
+    # Guard against wiping arbitrary user paths: the destination must live
+    # inside a software-copyright package directory.
+    if "software_copyright" not in dst.parts and "software-copyright" not in dst.parts:
+        print("ERROR: destination must live inside a software_copyright/ package directory", file=sys.stderr)
+        print(f"       (refusing to replace: {dst})", file=sys.stderr)
+        return 2
 
-    if dst.exists() and not args.keep_dst:
+    if dst.exists() and any(dst.iterdir()) and not args.force:
+        print(f"ERROR: destination already exists and is not empty: {dst}", file=sys.stderr)
+        print("       pass --force to replace it.", file=sys.stderr)
+        return 2
+
+    if dst.exists():
         shutil.rmtree(dst)
     dst.mkdir(parents=True, exist_ok=True)
 
@@ -98,7 +116,7 @@ def main() -> int:
 
     print(f"Source: {src}")
     print(f"Copy:   {dst}")
-    print(f"Copied {file_count} files with empty lines removed.")
+    print(f"Copied {file_count} files (blank lines removed from Python files only).")
     print("The original source was not modified.")
     return 0
 

@@ -17,11 +17,12 @@
 
 ## 预览
 
-左侧是说明书封面，右侧是源程序文档封面。正文各章都已写示范内容，编译即可出PDF。
+说明书封面、正文内页与源程序文档封面。正文各章都已写示范内容，编译即可出PDF。
 
 <p align="center">
-  <img src="assets/handbook-cover.png" alt="说明书封面示例" width="300">
-  <img src="assets/sourcecode-cover.png" alt="源程序文档封面示例" width="300">
+  <img src="assets/handbook-cover.png" alt="说明书封面" width="280">
+  <img src="assets/inner-page.png" alt="说明书正文内页" width="280">
+  <img src="assets/sourcecode-cover.png" alt="源程序文档封面" width="280">
 </p>
 
 ## 这套模板解决什么
@@ -44,7 +45,6 @@
 | 事实清单 | materials/facts.md记录关键数字与源码依据，避免跨章节口径不一致 |
 | 工具链 | 编译、行数统计、抽页、查词、隐私检查、版本冻结脚本 |
 | 写作指南 | guidelines/ 分阶段指南，自己写或交给AI都可以 |
-| 端到端自测 | tests/smoke.sh一条命令验证示例软件与文档编译 |
 
 ## 快速开始
 
@@ -77,7 +77,7 @@ bash ../softcopy-toolkit/compile.sh "$(pwd)/document.tex"
 bash ../softcopy-toolkit/compile.sh "$(pwd)/source-code.tex"
 ```
 
-`init_code_copy.py` 只读取 `src/`，把去空行副本写到 `src_prod/`，不改动原始源码；Python多行字符串里的空行会保留，避免改变代码含义。
+`init_code_copy.py` 会生成 `src_prod/`（去空行的代码副本），源代码文档实际引用的就是它；`src/` 里的原始代码不会被改动。
 
 ## 目录结构
 
@@ -94,7 +94,6 @@ software-copyright-kit/
 │   └── materials/            application.md申请表 + facts.md事实清单 + architecture.mmd
 ├── softcopy-toolkit/         编译、行数统计、抽页、隐私检查、版本冻结
 ├── guidelines/               写作指南（总原则、各阶段、写作规范）
-├── tests/smoke.sh            端到端冒烟测试
 └── assets/                   README预览图
 ```
 
