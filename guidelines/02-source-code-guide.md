@@ -11,8 +11,7 @@
 ### 1. 准备代码副本
 
 - 唯一开发源是 `software_copyright/src/`，不要直接改它。
-- 运行初始化脚本生成提交副本：`python softcopy-toolkit/init_code_copy.py`。脚本只读取 `src/`，把去空行副本写到 `src_prod/`，不改动原始源码；Python多行字符串里的空行会保留，其他语言原样复制。
-- 副本已存在且非空时，脚本会拒绝覆盖，需加 `--force` 重新生成。
+- 运行初始化脚本生成提交副本：`python softcopy-toolkit/init_code_copy.py --force`。仓库已自带`src_prod/`，目标非空必须加`--force`；脚本只读取`src/`、写入`src_prod/`，不改动原始源码；Python多行字符串里的空行会保留，其他语言原样复制。
 - 改完 `src/` 后必须重新运行初始化脚本，否则源码文档用的是旧代码。判断是否过期要先重新生成再比较，直接 `diff src src_prod` 的差异大多是空行，不能据此判断。
 
 ### 2. 编辑code_simplified.tex
@@ -40,7 +39,7 @@ python ../softcopy-toolkit/check_pdf_lines.py source-code.pdf --kind source --sc
 
 - 每页不少于50行；不足60页全交。
 - 检查有没有稀疏页、有没有换行导致的难看断行。
-- 交存节选用 `extract_front_back_pages.py` 取前30+后30页，不要自己删代码。
+- 交存节选用 `extract_front_back_pages.py` 取前30+后30页；开头的封面和目录会自动排除，前30页从正文第1页起算，不要自己删代码。
 
 ### 自动检查
 

@@ -85,8 +85,9 @@ EOF
         print_info "继续编译，如遇到包缺失错误请手动安装"
     fi
     
-    # 清理测试文件（某些平台的删除包装器会返回非0，不应中断编译）
-    rm -rf "$tmp_dir" 2>/dev/null || true
+    # 清理测试文件：不用rm -rf，避免部分平台的删除包装器直接中止进程
+    rm -f -- "$tmp_dir"/* 2>/dev/null || true
+    rmdir -- "$tmp_dir" 2>/dev/null || true
 }
 
 # 清理与指定 tex 同名的临时文件，避免误删同目录无关文件
@@ -167,7 +168,8 @@ compile_single() {
         print_success "成功生成 ${base_name}.pdf (${pdf_pages} 页, ${pdf_size})"
         # 编译成功，日志无排查价值，清理以免 /tmp 堆积（带路径前缀守卫）
         if [[ -n "$log_dir" && "$log_dir" == "${TMPDIR:-/tmp}/softcopy-"* ]]; then
-            rm -rf -- "$log_dir" 2>/dev/null || true
+            rm -f -- "$log_dir"/* 2>/dev/null || true
+            rmdir -- "$log_dir" 2>/dev/null || true
         fi
         return 0
     else

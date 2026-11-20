@@ -4,7 +4,7 @@
 
 **一套公开、可复用的软件著作权申请材料模板包**
 
-说明书 · 源程序文档 · 申请表 · 编译工具链 · AI分步提示词，全部打包好。克隆或下载后，把示例软件换成你自己的软件即可。
+说明书 · 源程序文档 · 申请表 · 编译工具链 · 写作指南，全部打包好。克隆或下载后，把示例软件换成你自己的软件即可。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![文档语言](https://img.shields.io/badge/文档-中文-orange)]()
@@ -13,7 +13,7 @@
 
 </div>
 
-软件著作权只在中国登记，所以本仓库的说明以中文为主。目标用户是课题组内外的研究生与开发者：照着模板改，就能得到一份格式合规、内容扎实的软著申请材料。
+本仓库面向中国的软件著作权登记，说明以中文为主。目标用户是课题组内外的研究生与开发者：照着模板改，就能得到一份格式合规、内容扎实的软著申请材料。
 
 ## 预览
 
@@ -69,15 +69,15 @@ cd software-copyright-kit
 6. 编译两份PDF，检查每页行数。
 
 ```bash
-# 换成你自己的代码后，重新生成去空行副本（仓库已自带一份 src_prod/）
-python softcopy-toolkit/init_code_copy.py
+# 换成你自己的代码后，覆盖仓库自带的src_prod/（原始src/不变）
+python softcopy-toolkit/init_code_copy.py --force
 
 cd software_copyright
 bash ../softcopy-toolkit/compile.sh "$(pwd)/document.tex"
 bash ../softcopy-toolkit/compile.sh "$(pwd)/source-code.tex"
 ```
 
-仓库自带一份编译好的 `document.pdf`、`source-code.pdf` 和去空行副本 `src_prod/`，克隆后不用先跑初始化脚本就能直接看成品、直接编译。换成自己的代码后，运行 `init_code_copy.py` 重新生成 `src_prod/`；`src/` 里的原始代码不会被改动。
+仓库自带一份编译好的 `document.pdf`、`source-code.pdf` 和去空行副本 `src_prod/`，克隆后不用先跑初始化脚本就能直接看成品、直接编译。换成自己的代码后，运行 `init_code_copy.py --force` 覆盖 `src_prod/`；目标非空会触发保护，必须显式加 `--force`，`src/` 里的原始代码不会被改动。
 
 ## 目录结构
 
@@ -127,7 +127,7 @@ Windows可用已安装的TeX Live；`easybook.cls` 系列模板文件已随仓�
 - 源程序每页不少于50行，文档每页不少于30行。
 - 申请表、说明书封面、源码页眉的软件全称与版本号必须一致；界面截图上的名称也要一致。
 - 不虚构内容凑篇幅；总量不足就全交。
-- 抽页用 `extract_front_back_pages.py`，它会自动识别开头的封面和目录页，这些页保留但不占用前30页配额。
+- 抽页用 `extract_front_back_pages.py`，它会自动排除开头的封面和目录，前30页从正文第1页起算；需要留封面做预览时加 `--keep-cover`。
 - `check_pdf_lines.py` 统计的是排版后的印刷视觉行，适合发现稀疏页，不能替代人工核对代码完整性；示例包不足60页时最后一页行数为零头属正常，检查可加 `--allow-short-last`。
 
 ## 登记合规提醒（2026年起）

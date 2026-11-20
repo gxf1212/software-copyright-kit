@@ -53,16 +53,30 @@ for doc in document source-code; do
      [ -f "$doc.pdf" ]; then ok "compile $doc.tex"; else bad "compile $doc.tex"; fi
 done
 
-# 5. 抽页（正式交存默认：前后各2页，不含封面）
-if run "$PY" "$REPO/softcopy-toolkit/extract_front_back_pages.py" source-code.pdf "$TMP/extract.pdf" --front-pages 2 --back-pages 2 && [ -f "$TMP/extract.pdf" ]; then
-  ok "extract_front_back_pages"
+# 5.抽页：封面自动排除，输出恰好4页源码，首页是正文第1页
+if run "$PY" "$REPO/softcopy-toolkit/extract_front_back_pages.py" source-code.pdf "$TMP/extract.pdf" --front-pages 2 --back-pages 2 && \
+   "$PY" -c 'from pypdf import PdfReader; import sys; r=PdfReader(sys.argv[1]); t=r.pages[0].extract_text() or ""; assert len(r.pages)==4 and "第1页" in t, (len(r.pages), t[:60])' "$TMP/extract.pdf" >"$TMP/out.log" 2>&1; then
+  ok "extract excludes cover and keeps 4 source pages"
 else
-  bad "extract_front_back_pages"
+  cat "$TMP/out.log"
+  bad "extract excludes cover and keeps 4 source pages"
 fi
 
-# 6. 审计与隐私检查脚本可运行
-if run "$PY" "$REPO/softcopy-toolkit/audit_material.py"; then ok "audit_material runs"; else bad "audit_material runs"; fi
-if run "$PY" "$REPO/softcopy-toolkit/check_privacy.py" "$REPO"; then ok "check_privacy runs"; else bad "check_privacy runs"; fi
+# 6.审计：干净包应返回0，故意植入问题应返回1
+if run "$PY" "$REPO/softcopy-toolkit/audit_material.py" --package "$REPO/software_copyright"; then
+  ok "audit passes clean package"
+else
+  cat "$TMP/out.log"
+  bad "audit passes clean package"
+fi
+cp -r "$REPO/software_copyright" "$TMP/badpkg"
+printf 'TODO planted for smoke test\n' >> "$TMP/badpkg/1-introduction.tex"
+if ! run "$PY" "$REPO/softcopy-toolkit/audit_material.py" --package "$TMP/badpkg"; then
+  ok "audit detects planted issue"
+else
+  bad "audit detects planted issue"
+fi
+if run "$PY" "$REPO/softcopy-toolkit/check_privacy.py" "$REPO"; then ok "check_privacy runs (advisory)"; else bad "check_privacy runs (advisory)"; fi
 
 echo ""
 if [ "$FAIL" -eq 0 ]; then

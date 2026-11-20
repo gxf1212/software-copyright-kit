@@ -86,7 +86,7 @@ software-copyright-kit/
 ### 步骤C：准备源程序文档
 
 1. 把真实源码放到 `software_copyright/src/`（保留原始开发源码，不要动）。
-2. 运行初始化脚本生成去空行副本：`python softcopy-toolkit/init_code_copy.py`。脚本只读取 `src/`、写入 `src_prod/`，不改动原始源码；Python多行字符串里的空行会保留。
+2. 运行初始化脚本生成去空行副本：`python softcopy-toolkit/init_code_copy.py --force`。仓库已自带`src_prod/`，目标非空需要`--force`；脚本只读取`src/`、写入`src_prod/`，不改动原始源码；Python多行字符串里的空行会保留。
 3. 统计行数：`python softcopy-toolkit/count_lines.py software_copyright/src_prod`。如需对副本再去空行，可加 `--remove-empty`，该选项只允许在名为 `src_prod` 的生成副本上执行，对 `src/` 会拒绝。
 4. 编辑 `code_simplified.tex`：按模块分组写 `\section` / `\subsection`（文件名里的 `_` 写成 `\_`），每条代码用 `\lstinputlisting{src_prod/...}`。只写清单，不写解说文字。细节见 `guidelines/02-source-code-guide.md`。
 
@@ -125,14 +125,14 @@ python softcopy-toolkit/check_pdf_lines.py software_copyright/source-code.pdf --
 python softcopy-toolkit/check_pdf_lines.py software_copyright/document.pdf --kind document --scope deposit
 ```
 
-需要交存节选时（前后各30页）：
+需要交存节选时（前后各30页，封面与目录自动排除）：
 
 ```bash
 python softcopy-toolkit/extract_front_back_pages.py software_copyright/source-code.pdf
 python softcopy-toolkit/extract_front_back_pages.py software_copyright/document.pdf
 ```
 
-生成的节选PDF和交存报告要人工核对：页码连续、源文件顺序正确、封面是否计入、代码是否完整。自动检查仅作辅助。
+生成的节选PDF和交存报告要人工核对：页码连续、源文件顺序正确、封面是否已排除、代码是否完整。自动检查仅作辅助。
 
 最后冻结版本（记录源码commit/哈希、版本、日期和PDF哈希，便于追溯）：
 
@@ -150,7 +150,7 @@ python softcopy-toolkit/check_privacy.py .
 
 - `src/` 是唯一开发源，功能改动只动 `src/`。
 - `src_prod/` 是生成副本，去空行后供 `code_simplified.tex` 引用。仓库自带一份，改完 `src/` 后重新运行初始化脚本更新。
-- 改完 `src/` 必须重新运行 `python softcopy-toolkit/init_code_copy.py`，否则源码文档用的是旧代码。
+- 改完`src/`必须重新运行`python softcopy-toolkit/init_code_copy.py --force`，否则源码文档用的是旧代码。
 - 判断"是否过期"要先重新复制去空行再比较；直接 `diff src src_prod` 的差异大多是空行，不能据此判断。
 
 ## 4. 排版约定速查
