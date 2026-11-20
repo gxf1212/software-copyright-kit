@@ -21,7 +21,7 @@
 - `\section` 按功能模块分组，`\subsection` 用文件名；文件名里的下划线写成 `\_`（如 `my\_module.py`）。
 - 路径指向 `src_prod/`，如 `\lstinputlisting{src_prod/demo_tool/io.py}`。
 - 挑能体现主要功能的模块；代码总量大时不要塞无关代码。
-- 总行数用count_lines.py统计后填入申请表"源程序量"。
+- 总行数用count_lines.py统计后填入申请表“源程序量”。
 
 ### 3. 样式约定（已在模板里设好，通常不用改）
 
