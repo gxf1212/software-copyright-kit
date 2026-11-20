@@ -1,0 +1,54 @@
+% !TEX program = xelatex
+% =====================================================================
+% 使用说明书主文档
+%
+% 这是"用户手册 / 使用说明书"，回答"软件怎么用"。
+% 源码清单在另一份 source-code.tex，两份文档分开编译。
+%
+% 章节取舍（软著只要求提交设计说明书、使用说明书之一，任选其一即可）：
+%   - 界面型软件（Web / 桌面）：留 1、2、4、5、6、7
+%   - 命令行工具：留 1、2、3、5、6、7
+%   - 两者都有：全部保留
+% 用不到的章节把下面的 \input 行注释掉即可，不要留空节。
+% 每章写什么、哪些必写，见对应子文件顶部的注释。
+% =====================================================================
+\documentclass[
+class = book,
+zihao = -4,
+font = noto,
+paper = a4paper,
+openany
+]{easybook}
+
+\input{settings}
+\raggedbottom
+\usepackage{seqsplit}
+\usepackage{needspace}
+\lstset{
+	style=mystyle,
+	escapeinside={(*@}{@*)} % 允许在代码中使用LaTeX命令
+}
+
+% 说明书版心：左右边距 2.54cm，减少长命令/路径/代码框换行。
+\geometry{hmargin=2.54cm}
+
+\begin{document}
+	\title{\songti \NameCN \\ \Version \\ 使用说明}
+	\date{\today}
+
+	\frontmatter[roman]
+	\maketitle
+	\tableofcontents
+
+	\mainmatter*
+
+	\input{1-introduction.tex}
+	\input{2-installation.tex}
+	\input{3-cli-usage.tex}
+	\input{4-gui-usage.tex}
+	\input{5-architecture.tex}
+	\input{6-data-structure.tex}
+	\input{7-appendix.tex}
+
+	\backmatter
+\end{document}

@@ -1,0 +1,53 @@
+% !TEX program = xelatex
+% =====================================================================
+% 源程序文档主文件（源代码鉴别材料）
+%
+% 与手册的区别：
+%   1. 字体用 times*，不用 noto；
+%   2. \newcommand{\CodeBlockStyle}{plain} 去掉代码框的边框和底色，
+%      交存材料要求纯白底、行号在右上角，带框的样式不合适；
+%   3. 不生成目录，封面后直接 \input{code_simplified.tex}；
+%   4. 正文只放 \section / \subsection / \lstinputlisting，不写解说文字。
+%
+% 编译前：先在 src_prod/ 放好去空行的代码副本，再改 code_simplified.tex。
+% =====================================================================
+\documentclass[
+class = book,
+zihao = -4,
+font = times*,
+paper = a4paper,
+openany
+]{easybook}
+
+% 源代码鉴别材料采用纯白底、无边框；删除此行即可恢复模板默认外观。
+\newcommand{\CodeBlockStyle}{plain}
+\input{settings}
+\lstset{
+	style=codestyle,
+	escapeinside={(*@}{@*)},
+	basicstyle=\ttfamily\fontsize{6.5pt}{6.8pt}\selectfont,
+	breaklines=true,
+	breakatwhitespace=true,
+	columns=fullflexible,
+	xleftmargin=2pt,
+	xrightmargin=2pt,
+	framesep=2pt,
+	breakindent=1em,
+	breakautoindent=true,
+	postbreak=\mbox{\textcolor{gray}{\tiny$\hookrightarrow$}\space}
+}
+
+\begin{document}
+	\title{\songti \NameCN \\ \Version \\ 源程序文档}
+	\date{\today}
+
+	\frontmatter[roman]
+	\maketitle
+	% \tableofcontents
+
+	\mainmatter*
+	\newpage
+
+	\input{code_simplified.tex}
+
+\end{document}

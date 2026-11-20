@@ -1,0 +1,28 @@
+%%{init: {'theme':'base', 'themeVariables': { 'fontSize':'28px', 'fontFamily':'Noto Sans CJK SC'}, 'themeCSS': '.cluster-label p { background: #FFFFFF; } .nodeLabel, .edgeLabel { font-weight: 500; }', 'flowchart': {'nodeSpacing': 40, 'rankSpacing': 58, 'wrappingWidth': 360, 'subGraphTitleMargin': {'top': 10, 'bottom': 22}}}}%%
+flowchart TB
+    CLI["命令行入口<br/>python -m demo_tool"]
+    WEB["浏览器界面<br/>Streamlit"]
+
+    subgraph CORE["核心处理层"]
+        direction LR
+        IO["io.py<br/>编码探测 / 读写"]
+        C1["core.py<br/>清洗 / 筛选"]
+        R["report.py<br/>完整性统计"]
+    end
+
+    OUT["输出<br/>cleaned.csv · selected.csv · report.csv"]
+
+    CLI --> IO
+    WEB --> IO
+    IO --> C1
+    C1 --> R
+    R --> OUT
+
+    classDef entry fill:#F2D9A0,stroke:#B8913F,stroke-width:2px
+    classDef flow fill:#DCEEF0,stroke:#5E9BA6,stroke-width:2px
+    classDef outbox fill:#F3EEF7,stroke:#8A6FA3,stroke-width:2px
+
+    class CLI,WEB entry
+    class IO,C1,R flow
+    class OUT outbox
+    class CORE flow

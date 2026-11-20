@@ -1,0 +1,101 @@
+% !TEX root = document.tex
+% =====================================================================
+% 第3章 命令行使用方法 —— 命令行型软件的核心章，界面型软件可整章删掉
+%
+% 写什么：
+%   1. 快速上手：一段可直接照抄的命令，从输入走到产出。放在最前面。
+%   2. 命令清单：每个子命令一个小节，写清"做什么 + 命令样例 + 参数表 + 输出"。
+%   3. 参数说明：逐个列参数含义，必需参数标注"必需"。
+%   4. 输出文件：列出产物文件名和含义。
+%   5. 典型流程：串起多个命令的完整例子。
+%
+% 排版约定：
+%   - 命令块用 lstlisting，style=blockstyle，language填bash或python。
+%   - 行内代码/参数名用 \lstinline|...|，下划线不用转义。
+%   - 文字段落里的下划线用 \_，反斜杠用 \textbackslash。
+%   - 命令行软件不写界面截图，截图留给第4章。
+% =====================================================================
+
+\section{命令行使用方法}
+\label{sec:cli_usage}
+
+本章说明\Name{}的命令行接口。所有命令通过\lstinline|python -m demo_tool|调用，后接子命令与参数。
+
+\subsection{快速上手}
+\label{ssec:cli_quickstart}
+以下命令把一个CSV文件规范化后写出，并打印完整性报告：
+\begin{lstlisting}[language=bash,style=blockstyle]
+# 1. 查看版本，确认环境可用
+python -m demo_tool --version
+
+# 2. 清理列名与空白，去掉空行
+python -m demo_tool clean raw.csv cleaned.csv
+
+# 3. 只保留需要的列
+python -m demo_tool select cleaned.csv selected.csv --columns name score
+
+# 4. 生成完整性报告
+python -m demo_tool report selected.csv --output report.csv
+\end{lstlisting}
+第4步结束后，\lstinline|selected.csv|为整理后的数据，\lstinline|report.csv|为逐列统计结果。
+
+\subsection{命令清单}
+\label{ssec:cli_commands}
+软件提供三个子命令，分别用于清理、筛选和统计。
+
+\subsubsection{clean}
+\label{ssec:cli_clean}
+规范化列名与单元格内容，按需要过滤空行：
+\begin{lstlisting}[language=bash,style=blockstyle]
+python -m demo_tool clean input.csv output.csv --keep-empty
+\end{lstlisting}
+参数说明：
+\begin{itemize}
+    \item \lstinline|input|（必需）：输入CSV文件路径。
+    \item \lstinline|output|（必需）：输出CSV文件路径。
+    \item \lstinline|--keep-empty|：保留空行；默认情况下空行被删除。
+\end{itemize}
+输出文件为UTF-8编码的CSV，列名统一为小写下划线形式，重复列名自动加序号后缀。
+
+\subsubsection{select}
+\label{ssec:cli_select}
+按给定列名筛选并输出：
+\begin{lstlisting}[language=bash,style=blockstyle]
+python -m demo_tool select input.csv output.csv --columns name score
+\end{lstlisting}
+参数说明：
+\begin{itemize}
+    \item \lstinline|--columns|（必需）：要保留的列名，可跟多个。
+\end{itemize}
+列顺序与参数中给出的顺序一致；若指定了不存在的列，命令报错并列出未知列名。
+
+\subsubsection{report}
+\label{ssec:cli_report}
+统计每行的总数、非空数与不同值个数：
+\begin{lstlisting}[language=bash,style=blockstyle]
+python -m demo_tool report input.csv --output report.csv
+\end{lstlisting}
+参数说明：
+\begin{itemize}
+    \item \lstinline|--output|：可选，把统计结果写成CSV；不指定时打印到终端。
+\end{itemize}
+
+\subsection{输出文件说明}
+\label{ssec:cli_outputs}
+\begin{table}[H]
+\centering
+\begin{tabular}{ll}
+\toprule
+\textbf{文件} & \textbf{含义} \\
+\midrule
+cleaned.csv & 列名规范化、空白清理后的数据 \\
+selected.csv & 按指定列筛选后的数据 \\
+report.csv & 逐列完整性统计结果 \\
+\bottomrule
+\end{tabular}
+\caption{命令行输出文件}
+\end{table}
+
+\subsection{典型处理流程}
+\label{ssec:cli_pipeline}
+批量整理数据的完整顺序为：先用\lstinline|clean|统一格式，再用\lstinline|select|取需要的列，最后用\lstinline|report|检查缺失情况。三步的输入输出可以写成脚本循环，对多个文件重复执行。

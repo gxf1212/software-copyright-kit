@@ -1,0 +1,62 @@
+% !TEX root = document.tex
+% =====================================================================
+% 第5章 软件架构与功能模块 —— 各类型都建议写，设计说明书的核心
+%
+% 软著哲学：审查人看这一章判断"这软件是不是真做了这些功能"。
+% 写什么：
+%   1. 架构图：一张模块图 + 一段文字说明分层。用 Mermaid 画，源在 materials/。
+%   2. 模块说明：逐个模块写职责，和源码目录一一对应，别写空话。
+%   3. 处理流程：编号列出主流程，对应到代码里的实际步骤。
+%   4. 技术栈：列出语言、框架、库，和申请表一致。
+%
+% 注意：
+%   - 架构图框内文字要少，太长就拆框，横向布局优先。
+%   - 模块名、函数名要和真实源码一致，写完去代码里核对一遍。
+%   - 软件名、术语全文统一。
+% =====================================================================
+
+\section{软件架构与功能模块}
+\label{sec:architecture}
+
+\subsection{总体架构}
+\label{ssec:arch_overview}
+\Name{}采用分层结构，由用户接口层、核心处理层与输入输出层组成。用户接口层提供命令行和浏览器两种入口；核心处理层实现清洗、筛选与统计；输入输出层负责文件的编码探测、读取与写出。两层入口调用同一套核心模块，保证结果一致。
+
+\begin{figure}[htbp]
+\centering
+% 占位：用 materials/architecture.mmd 渲染后放到 images/ 下
+% \includegraphics[width=0.9\textwidth]{images/architecture.png}
+\caption{\Name{}软件架构与数据流示意图}
+\label{fig:architecture}
+\end{figure}
+
+架构图对应的Mermaid源文件见\lstinline|materials/architecture.mmd|，可用Mermaid CLI渲染为PNG后放入\lstinline|images/|目录。
+
+\subsection{模块说明}
+\label{ssec:modules}
+\begin{itemize}
+    \item \textbf{io.py：} 文件输入输出。\lstinline|detect_encoding|按候选编码逐个尝试，避免直接用默认编码打开非UTF-8文件；\lstinline|read_rows|与\lstinline|write_rows|负责表格数据的读写。
+    \item \textbf{core.py：} 核心清洗规则。\lstinline|normalize_header|把列名转为小写下划线形式并处理重名；\lstinline|trim_cells|清除单元格首尾空白；\lstinline|drop_empty_rows|过滤空行；\lstinline|select_columns|按指定列筛选并检查未知列。
+    \item \textbf{report.py：} 统计汇总。\lstinline|summarize|逐列计算总数、非空数与不同值个数，\lstinline|ColumnSummary|提供缺失数与填充率。
+    \item \textbf{cli.py：} 命令行入口。用\lstinline|argparse|定义\lstinline|clean|、\lstinline|select|、\lstinline|report|三个子命令，并分派到对应处理函数。
+    \item \textbf{web.py：} 浏览器界面。基于Streamlit实现文件上传、数据预览、完整性报告与结果下载。
+\end{itemize}
+
+\subsection{处理流程}
+\label{ssec:arch_flow}
+一次完整的整理流程如下：
+\begin{enumerate}
+    \item 用户通过命令行或界面给出输入文件与处理参数；
+    \item 输入输出层探测编码并读取数据为行列结构；
+    \item 核心处理层按需执行列名规范化、空白清理、空行过滤或列筛选；
+    \item 统计模块计算逐列完整性指标；
+    \item 结果经输入输出层写出为CSV，或在界面中展示并提供下载。
+\end{enumerate}
+
+\subsection{技术栈}
+\label{ssec:tech_stack}
+\begin{itemize}
+    \item \textbf{Python 3.10+：} 核心开发语言。
+    \item \textbf{Streamlit：} 浏览器交互界面。
+    \item \textbf{argparse：} 命令行参数解析。
+\end{itemize}

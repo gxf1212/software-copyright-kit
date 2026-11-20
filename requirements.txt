@@ -1,0 +1,3 @@
+# softcopy-toolkit 依赖
+pypdf>=4.0
+pymupdf>=1.23

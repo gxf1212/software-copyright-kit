@@ -1,0 +1,58 @@
+% !TEX root = document.tex
+% =====================================================================
+% 第6章 数据结构与文件说明 —— 有数据/文件/数据库的软件写，纯算法软件可删
+%
+% 写什么：
+%   1. 输入输出文件格式：字段名、类型、含义，用三线表列成数据字典。
+%   2. 内部数据结构：关键类或数据类有哪些字段。
+%   3. 目录结构：源码目录树 + 每个目录/文件干什么。
+%
+% 注意：
+%   - 表格用三线表居中，列名和类型要跟代码里的实际字段一致。
+%   - 有数据库的软件在这一章写表结构、字段、主外键。
+%   - 命令行和界面共用的数据格式只写一次，不要重复。
+% =====================================================================
+
+\section{数据结构与文件说明}
+\label{sec:data_structure}
+
+\subsection{输入文件格式}
+\label{ssec:input_format}
+软件接受UTF-8或GB18030编码的CSV文件，第一行为表头，其余每行一条记录。读取时会尝试候选编码列表中的每一种，直到能够完整解码。
+
+\subsection{内部数据结构}
+\label{ssec:internal_data}
+读取后的数据表示为"表头列表 + 数据行列表"：表头是字符串列表，数据行是字符串列表的列表，二者下标一一对应。统计结果用\lstinline|ColumnSummary|数据类表示，字段含义如表\ref{tab:column_summary}所示。
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lll}
+\toprule
+\textbf{字段} & \textbf{类型} & \textbf{含义} \\
+\midrule
+name & str & 列名 \\
+total & int & 该列记录总数 \\
+filled & int & 非空单元格数 \\
+distinct & int & 不同非空值个数 \\
+\bottomrule
+\end{tabular}
+\caption{ColumnSummary字段说明}
+\label{tab:column_summary}
+\end{table}
+
+\subsection{输出文件格式}
+\label{ssec:output_format}
+写出文件统一采用UTF-8带BOM编码的CSV，便于在表格软件中直接打开。报告文件包含\lstinline|column|、\lstinline|total|、\lstinline|filled|、\lstinline|distinct|、\lstinline|missing|五列。
+
+\subsection{源码目录结构}
+\label{ssec:dir_structure}
+\begin{lstlisting}[language=bash,style=blockstyle]
+src/demo_tool/
+├── __init__.py      # 版本信息与包导出
+├── io.py            # 编码探测与文件读写
+├── core.py          # 清洗与筛选规则
+├── report.py        # 完整性统计
+├── cli.py           # 命令行入口
+└── web.py           # 浏览器界面
+\end{lstlisting}
+各模块职责见第\ref{sec:architecture}章模块说明，函数实现见源程序文档。

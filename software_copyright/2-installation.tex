@@ -1,0 +1,92 @@
+% !TEX root = document.tex
+% =====================================================================
+% 第2章 软件基本信息与安装 —— 所有软件类型都必写
+%
+% 写什么：
+%   1. 软件基本信息表（三线表）：名称、版本、开发单位、完成日期、
+%      运行平台、编程语言、依赖。必须和申请表 application.md 完全一致！
+%   2. 系统要求：硬件（最低/推荐）+ 操作系统 + 核心依赖。
+%   3. 获取与安装：安装命令、环境配置、启动方式。命令行和界面都写。
+%
+% 硬约束：
+%   - 表中软件名、版本号必须与封面、申请表、源码页眉一致，审查会逐项核对。
+%   - 界面截图上的名称必须与申请表上的软件名称一致。
+%   - 每条软硬件环境描述控制在50字以内（申请表字数限制）。
+%   - 表格用三线表并居中，长表格用 longtable。
+% =====================================================================
+
+\section{软件基本信息与安装配置}
+\label{sec:installation}
+
+\subsection{软件基本信息}
+\label{ssec:software_info}
+\begin{table}[H]
+\centering
+\begin{tabular}{ll}
+\toprule
+\textbf{项目} & \textbf{内容} \\
+\midrule
+软件名称 & \Name \\
+软件简称 & \texttt{demo-tool}（命令行入口名） \\
+版本号 & \Version{} \\
+开发单位 & 示例单位（请替换为实际著作权人） \\
+开发完成日期 & 2026年1月1日（请替换为实际日期） \\
+运行平台 & Windows / Linux / macOS \\
+编程语言 & Python 3.10+ \\
+依赖库 & Streamlit \\
+源代码网址 & \mbox{\url{https://example.org/your-repo}}（请替换） \\
+\bottomrule
+\end{tabular}
+\caption{软件基本信息}
+\label{tab:software_info}
+\end{table}
+
+表\ref{tab:software_info}中的软件名称、版本号与说明书封面及申请表保持一致。正式提交前，请把"示例单位""示例网址"等占位内容替换为真实信息。
+
+\subsection{系统要求与环境准备}
+\label{ssec:requirements}
+
+\subsubsection{硬件要求}
+最低配置：
+\begin{itemize}
+    \item CPU：2核及以上
+    \item 内存：4~GB及以上
+    \item 存储：100~MB可用空间
+\end{itemize}
+推荐配置：8核CPU、16~GB内存、SSD存储。
+
+\subsubsection{操作系统支持}
+\begin{itemize}
+    \item Windows 10及以上
+    \item Linux 主流发行版
+    \item macOS 11及以上
+\end{itemize}
+
+\subsection{软件获取与安装}
+\label{ssec:install}
+
+\subsubsection{获取源码}
+\begin{lstlisting}[language=bash,style=blockstyle]
+git clone https://example.org/your-repo.git
+cd your-repo
+\end{lstlisting}
+如无法使用Git，可在仓库页面下载源码压缩包后解压。
+
+\subsubsection{创建运行环境}
+\begin{lstlisting}[language=bash,style=blockstyle]
+python -m venv .venv
+source .venv/bin/activate        # Windows用 .venv\Scripts\activate
+pip install -r requirements.txt
+\end{lstlisting}
+
+\subsubsection{启动方式}
+命令行方式直接调用入口：
+\begin{lstlisting}[language=bash,style=blockstyle]
+python -m demo_tool --version
+python -m demo_tool clean input.csv output.csv
+\end{lstlisting}
+浏览器界面方式启动服务后访问本地地址：
+\begin{lstlisting}[language=bash,style=blockstyle]
+streamlit run src/demo_tool/web.py
+\end{lstlisting}
+启动后在浏览器打开\url{http://localhost:8501}即可使用界面。

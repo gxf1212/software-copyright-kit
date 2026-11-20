@@ -1,0 +1,76 @@
+% !TEX program = xelatex
+% 全局配置：只改本文件的软件名、版本号和字体，其余章节会自动引用。
+% ============================================================
+
+% Document info —— 改成你自己的软件信息
+\newcommand{\Name}{DemoTool}
+\newcommand{\NameCN}{轻量数据整理工具}
+\newcommand{\FullName}{Lightweight Data Cleaning Toolkit}
+\newcommand{\Version}{V1.0}
+\newcommand{\Header}{\NameCN}
+
+% 西文字体：正文 Times New Roman，无衬线 Arial，代码 DejaVu Sans Mono。
+% 中文字体由 easybook.cls / ctex 管理，常用选项：font = noto 或 font = windows。
+\newcommand{\ManualRomanFont}{Times New Roman}
+\newcommand{\ManualSansFont}{Arial}
+\newcommand{\ManualMonoFont}{DejaVu Sans Mono}
+\AtBeginDocument{%
+  \setmainfont{\ManualRomanFont}%
+  \setsansfont{\ManualSansFont}%
+  \setmonofont{\ManualMonoFont}%
+}
+
+% 代码框外观开关：手册用 decorated（默认带边框底色），源程序文档在
+% source-code.tex 里改为 plain（纯白底无边框）。一般无需改这里。
+\providecommand{\CodeBlockStyle}{decorated}
+\newcommand{\PlainCodeBlockStyle}{plain}
+\ifx\CodeBlockStyle\PlainCodeBlockStyle
+  \lstdefinestyle{blockstyle}{
+    style=basecode,
+    basicstyle=\ttfamily\footnotesize,
+    numbers=none,
+    xleftmargin=1em,
+    framexleftmargin=0pt,
+    backgroundcolor={},
+    frame=none
+  }
+  \lstdefinestyle{codestyle}{
+    style=basecode,
+    basicstyle=\ttfamily\scriptsize,
+    numbers=none,
+    numbersep=10pt,
+    numberstyle=\tiny\color{codegray},
+    xleftmargin=1em,
+    framexleftmargin=0pt,
+    backgroundcolor={},
+    frame=none
+  }
+\fi
+
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, calc}
+
+\usepackage{zhlipsum,bicaption,tcolorbox}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{ragged2e}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage[section]{placeins}
+\usepackage[version=4]{mhchem}
+
+% 定宽表格列：左对齐且禁止英文单词在单元格中断词。
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash\hyphenpenalty=10000\exhyphenpenalty=10000}p{#1}}
+
+% 列表符号和正文一起缩进。
+\setlist[itemize,1]{leftmargin=*, labelindent=2em, itemsep=2pt, topsep=4pt, parsep=0pt}
+\setlist[enumerate,1]{leftmargin=*, labelindent=2em, itemsep=2pt, topsep=4pt, parsep=0pt}
+
+% 行内长标识符在行尾按字符折行，避免把上一行中文撑开。
+\newcommand{\cbr}[1]{\texttt{\seqsplit{#1}}}
+
+% 放宽断行容忍度，避免长命令或路径把两端对齐的中文行撑开。
+\tolerance=10000
+\emergencystretch=3em
+\hbadness=10000

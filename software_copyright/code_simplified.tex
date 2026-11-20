@@ -1,0 +1,35 @@
+% !TEX root = source-code.tex
+% =====================================================================
+% 代码清单：只写 \section / \subsection 和 \lstinputlisting，不写解说文字。
+%
+% 规则：
+%   - 路径指向 src_prod/（src/ 的去空行副本，不进 Git）。
+%   - \section 按功能模块分组，\subsection 用文件名。
+%   - 文件名里的下划线在 \subsection{} 里要写成 \_。
+%   - 超过 60 页时交存前 30 + 后 30 页，用 toolkit 的
+%     extract_front_back_pages.py 抽取，不要自己删代码凑页数。
+%   - 总代码量大的，挑能体现主要功能的模块，不要无关代码凑篇幅。
+%
+% 改完 src/ 后必须重新生成 src_prod/ 再编译，见 CLAUDE.md「代码管理」。
+% =====================================================================
+
+\section{命令行入口}
+\subsection{cli.py}
+\lstinputlisting{src_prod/demo_tool/cli.py}
+
+\section{核心处理}
+\subsection{core.py}
+\lstinputlisting{src_prod/demo_tool/core.py}
+
+\subsection{io.py}
+\lstinputlisting{src_prod/demo_tool/io.py}
+
+\subsection{report.py}
+\lstinputlisting{src_prod/demo_tool/report.py}
+
+\section{界面与入口}
+\subsection{web.py}
+\lstinputlisting{src_prod/demo_tool/web.py}
+
+\subsection{\_\_init\_\_.py}
+\lstinputlisting{src_prod/demo_tool/__init__.py}

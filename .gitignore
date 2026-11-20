@@ -1,0 +1,30 @@
+# 编译产物
+*.pdf
+*.aux
+*.log
+*.toc
+*.out
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+*.bbl
+*.blg
+*.xdv
+*.idx
+*.ind
+*.ilg
+
+# 代码副本：由 src/ 去空行生成，供 code_simplified.tex 引用
+software_copyright/src_prod/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+.DS_Store
