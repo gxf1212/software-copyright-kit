@@ -4,7 +4,9 @@
 %
 % 软著哲学：审查人看这一章判断"这软件是不是真做了这些功能"。
 % 写什么：
-%   1. 架构图：一张模块图 + 一段文字说明分层。用 Mermaid 画，源在 materials/。
+%   1. 架构图：一张模块图 + 一段文字说明分层。推荐用 TikZ 直接在 tex 里画（见下方例子），
+%      矢量输出、不依赖外部图片；界面截图等真实图像才用includegraphics。
+%      也可用Mermaid：源在materials/，渲染后放入images/。
 %   2. 模块说明：逐个模块写职责，和源码目录一一对应，别写空话。
 %   3. 处理流程：编号列出主流程，对应到代码里的实际步骤。
 %   4. 技术栈：列出语言、框架、库，和申请表一致。
@@ -24,13 +26,34 @@
 
 \begin{figure}[htbp]
 \centering
-% 占位：用 materials/architecture.mmd 渲染后放到 images/ 下
-% \includegraphics[width=0.9\textwidth]{images/architecture.png}
+\begin{tikzpicture}[
+    node distance=5mm and 7mm,
+    box/.style={draw, rounded corners, align=center, minimum height=9mm,
+                inner sep=3pt, font=\small},
+    entry/.style={box, fill=blue!8, draw=blue!70},
+    proc/.style={box, fill=teal!8, draw=teal!70},
+    outbox/.style={box, fill=gray!12, draw=gray!70},
+    edge/.style={->, >=Stealth, thick, gray!80},
+    layer/.style={draw, dashed, rounded corners, inner sep=3mm, gray!60}
+]
+\node[entry] (cli) {命令行入口\\python -m \Name};
+\node[entry, right=of cli] (web) {浏览器界面\\Streamlit};
+\node[proc, below=12mm of cli] (io) {io.py\\编码探测/读写};
+\node[proc, right=of io] (core) {core.py\\清洗/筛选};
+\node[proc, right=of core] (rep) {report.py\\完整性统计};
+\node[outbox, below=12mm of core] (out) {输出\\CSV文件};
+\node[layer, fit=(io)(core)(rep), label={[font=\scriptsize]above:核心处理层}] {};
+\draw[edge] (cli) -- (io);
+\draw[edge] (web) -- (io);
+\draw[edge] (io) -- (core);
+\draw[edge] (core) -- (rep);
+\draw[edge] (rep.south) -- (out.north east);
+\end{tikzpicture}
 \caption{\Name{}软件架构与数据流示意图}
 \label{fig:architecture}
 \end{figure}
 
-架构图对应的Mermaid源文件见\lstinline|materials/architecture.mmd|，可用Mermaid CLI渲染为PNG后放入\lstinline|images/|目录。
+图的绘制方式按内容选：架构图、流程图、状态图这类以方框和箭头为主的示意图，推荐像上面这样用TikZ直接在\TeX{}源码里画，矢量输出，放大不失真，也不依赖外部图片文件。界面截图、运行结果这类真实图像，才用\lstinline|\includegraphics|插入\lstinline|images/|下的图片。同一张架构图若习惯用Mermaid，源文件见\lstinline|materials/architecture.mmd|，渲染成PNG后放入\lstinline|images/|目录即可。
 
 \subsection{模块说明}
 \label{ssec:modules}

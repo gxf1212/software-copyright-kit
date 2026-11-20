@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """Count lines of code in a directory structure."""
 
+import argparse
+import io
 import os
 import sys
+import tokenize
+from pathlib import Path
 
 SOURCE_EXTENSIONS = {
     '.py', '.js', '.java', '.c', '.cpp', '.h', '.sh', '.bash',
@@ -67,12 +71,29 @@ def count_directory_lines(directory):
     return total_lines, file_count
 
 
+def multiline_string_lines(text):
+    """Line numbers touched by Python triple-quoted strings."""
+    touched = set()
+    try:
+        tokens = tokenize.generate_tokens(io.StringIO(text).readline)
+        for token in tokens:
+            if token.type == tokenize.STRING and token.end[0] > token.start[0]:
+                touched.update(range(token.start[0], token.end[0] + 1))
+    except (tokenize.TokenError, IndentationError):
+        pass
+    return touched
+
+
 def remove_empty_lines(file_path):
-    """Remove empty lines from a file."""
+    """Remove empty lines, keeping blank lines inside Python multi-line strings."""
     try:
         with open(file_path, 'r', encoding='utf-8') as f:
             lines = f.readlines()
-        non_empty_lines = [line for line in lines if line.strip()]
+        keep = multiline_string_lines(''.join(lines)) if str(file_path).lower().endswith('.py') else set()
+        non_empty_lines = [
+            line for index, line in enumerate(lines, start=1)
+            if line.strip() or index in keep
+        ]
         with open(file_path, 'w', encoding='utf-8') as f:
             if non_empty_lines:
                 if not non_empty_lines[-1].endswith('\n'):
@@ -107,16 +128,30 @@ def remove_empty_lines_from_directory(directory, extensions=None):
 
 
 COPYRIGHT_MARKERS = {"software-copyright", "software_copyright"}
+GENERATED_COPY_MARKERS = {"src_prod", "srccopy", "submit", "submission"}
 
 
 def is_copyright_copy(directory: str) -> bool:
-    """Return True if directory lives inside a software-copyright package.
+    """Return True only for a generated submission copy, never the source tree.
 
-    ``--remove-empty`` rewrites files in place, so it is only permitted on the
-    submitted code copy, never on the original development source.
+    ``--remove-empty`` rewrites files in place, so it is permitted only when
+    both conditions hold:
+
+    1. the path lives inside a software-copyright package; and
+    2. the directory itself (or its immediate parent) is an explicitly named
+       generated copy such as ``src_prod``.
+
+    A bare ``.../software_copyright/src`` is the original development source
+    and is rejected even though its path contains the package marker.
     """
-    path_parts = set(os.path.abspath(directory).split(os.sep))
-    return bool(COPYRIGHT_MARKERS & path_parts)
+    resolved = Path(directory).resolve()
+    parts = {part.lower() for part in resolved.parts}
+    if not (COPYRIGHT_MARKERS & parts):
+        return False
+    names = {resolved.name.lower()}
+    if resolved.parent.name:
+        names.add(resolved.parent.name.lower())
+    return bool(names & GENERATED_COPY_MARKERS)
 
 
 if __name__ == "__main__":

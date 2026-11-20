@@ -85,15 +85,28 @@ EOF
         print_info "继续编译，如遇到包缺失错误请手动安装"
     fi
     
-    # 清理测试文件
-    rm -rf "$tmp_dir" 2>/dev/null
+    # 清理测试文件（某些平台的删除包装器会返回非0，不应中断编译）
+    rm -rf "$tmp_dir" 2>/dev/null || true
 }
 
-# 清理临时文件
+# 清理与指定 tex 同名的临时文件，避免误删同目录无关文件
 cleanup() {
     local target_dir="${1:-.}"
-    print_info "清理临时文件..."
-    (cd "$target_dir" && rm -f *.aux *.log *.toc *.out *.fdb_latexmk *.fls *.synctex.gz *.bbl *.blg *.idx *.ind *.ilg *.lof *.lot *.nav *.snm *.vrb *.xdv *.figlist *.makefile *.fls_latexmk *.run.xml *-blx.bib package_test.*)
+    local base="${2:-}"
+    print_info "清理LaTeX临时文件..."
+    if [[ -z "$base" ]]; then
+        print_warning "未指定文档名，跳过清理（防止误删无关文件）"
+        return 0
+    fi
+    (
+        cd "$target_dir" || exit 0
+        local exts=(aux log toc out fdb_latexmk fls synctex.gz bbl blg idx ind ilg lof lot nav snm vrb xdv run.xml)
+        local ext
+        for ext in "${exts[@]}"; do
+            rm -f -- "${base}.${ext}"
+        done
+        rm -f -- "${base}-blx.bib"
+    )
     print_success "临时文件清理完成"
 }
 
@@ -111,6 +124,9 @@ compile_single() {
     log_dir="$(mktemp -d "${TMPDIR:-/tmp}/softcopy-${base_name}.XXXXXX")"
 
     print_info "编译 $tex_path..."
+
+    # 删除旧PDF，避免编译失败时把旧文件误报为新生成的成功结果
+    rm -f -- "${tex_dir}/${base_name}.pdf"
 
     # 第一次编译 - 生成辅助文件
     print_info "第一次XeLaTeX编译..."
@@ -135,27 +151,29 @@ compile_single() {
     (cd "$tex_dir" && xelatex -synctex=1 -interaction=nonstopmode "$tex_name" > "$log_dir/xelatex_pass3.log" 2>&1)
     local pass3_status=$?
 
+    # 编译失败判据：任一遍退出码非0，或最后一遍日志含 LaTeX 致命错误（行首 !）
+    local latex_error=0
+    if [ $pass1_status -ne 0 ] || [ $pass2_status -ne 0 ] || [ $pass3_status -ne 0 ]; then
+        latex_error=1
+    fi
+    if grep -q '^!' "$log_dir/xelatex_pass3.log" 2>/dev/null; then
+        latex_error=1
+    fi
+
     # 检查PDF是否生成
-    if [ -f "${tex_dir}/${base_name}.pdf" ]; then
+    if [ -f "${tex_dir}/${base_name}.pdf" ] && [ $latex_error -eq 0 ]; then
         local pdf_size=$(ls -lh "${tex_dir}/${base_name}.pdf" | awk '{print $5}')
         local pdf_pages=$(pdfinfo "${tex_dir}/${base_name}.pdf" 2>/dev/null | grep "Pages:" | awk '{print $2}')
         print_success "成功生成 ${base_name}.pdf (${pdf_pages} 页, ${pdf_size})"
-
-        # 显示警告（如果有）
-        if [ $pass1_status -ne 0 ] || [ $pass2_status -ne 0 ] || [ $pass3_status -ne 0 ]; then
-            print_warning "编译过程中有警告，但PDF已成功生成"
-            print_info "查看日志: ${log_dir}/xelatex_pass*.log"
-        else
-            # 三次编译均无警告：本次日志不再有排查价值，清理以免 /tmp 堆积。
-            # 路径前缀守卫：变量异常/为空时绝不执行 rm -rf
-            if [[ -n "$log_dir" && "$log_dir" == "${TMPDIR:-/tmp}/softcopy-"* ]]; then
-                rm -rf -- "$log_dir" 2>/dev/null
-            fi
+        # 编译成功，日志无排查价值，清理以免 /tmp 堆积（带路径前缀守卫）
+        if [[ -n "$log_dir" && "$log_dir" == "${TMPDIR:-/tmp}/softcopy-"* ]]; then
+            rm -rf -- "$log_dir" 2>/dev/null || true
         fi
         return 0
     else
-        print_error "编译失败，未生成PDF文件"
+        print_error "编译失败：PDF未生成或LaTeX报错"
         print_info "查看日志: ${log_dir}/xelatex_pass*.log"
+        grep -n '^!' "$log_dir/xelatex_pass3.log" 2>/dev/null | head -10
         return 1
     fi
 }
@@ -213,14 +231,14 @@ main() {
         echo "sudo apt-get install fonts-liberation"
     fi
 
-    # 清理旧的临时文件
-    cleanup "$tex_dir"
+    # 清理旧的临时文件（只清理同名文档）
+    cleanup "$tex_dir" "$base_name"
 
     # 编译指定文档
     compile_single "$tex_path"
 
     # 最终清理
-    cleanup "$tex_dir"
+    cleanup "$tex_dir" "$base_name"
 
     # 检查输出文件
     if [ -f "${tex_dir}/${base_name}.pdf" ]; then
@@ -290,7 +308,7 @@ show_help() {
 # 解析命令行参数
 case "${1:-}" in
     clean)
-        cleanup "$(dirname "$(resolve_tex_path "document.tex")")"
+        cleanup "$(dirname "$(resolve_tex_path "document.tex")")" document
         exit 0
         ;;
     --open)

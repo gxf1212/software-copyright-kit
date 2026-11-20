@@ -1,8 +1,8 @@
-# Prompt 2：写源程序文档
+# 指南2：写源程序文档
 
 ## 使用方式
 
-把本文件内容作为 AI 的指令，让它准备源程序鉴别材料。先给 AI 真实源码的位置和要纳入的文件清单。
+本文件是写作与自查的清单。把真实软件信息附在前面，可交给AI执行，也可自己照着做：准备源程序鉴别材料。先准备真实源码的位置和要纳入的文件清单。
 
 ## 提示词正文
 
@@ -13,16 +13,16 @@
 - 唯一开发源是 `software_copyright/src/`，不要直接改它。
 - 复制到提交副本：`cp -a src/. src_prod/`。
 - 去空行并统计：`python softcopy-toolkit/count_lines.py software_copyright/src_prod --remove-empty`。该脚本只在路径含 `software-copyright` 或 `software_copyright` 时允许改写。
-- 改完 `src/` 后必须重新复制并去空行，否则文档用的是旧代码。判断过期要先重新生成再比较，直接 diff 的差异大多是空行。
+- 改完 `src/` 后必须重新复制并去空行，否则文档用的是旧代码。判断过期要先重新生成再比较，直接diff的差异大多是空行。
 
-### 2. 编辑 code_simplified.tex
+### 2. 编辑code_simplified.tex
 
 - 主文档是 `source-code.tex`，不要改它；只编辑 `code_simplified.tex`。
 - 只写 `\section`、`\subsection` 和 `\lstinputlisting` 三类语句，不写任何解说文字。
 - `\section` 按功能模块分组，`\subsection` 用文件名；文件名里的下划线写成 `\_`（如 `my\_module.py`）。
 - 路径指向 `src_prod/`，如 `\lstinputlisting{src_prod/demo_tool/io.py}`。
 - 挑能体现主要功能的模块；代码总量大时不要塞无关代码。
-- 总行数用 count_lines.py 统计后填入申请表"源程序量"。
+- 总行数用count_lines.py统计后填入申请表"源程序量"。
 
 ### 3. 样式约定（已在模板里设好，通常不用改）
 

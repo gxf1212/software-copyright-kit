@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "demo-tool"
+version = "0.1.0"
+description = "Example toolkit used by the software copyright template kit"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+web = ["streamlit>=1.30"]
+
+[project.scripts]
+demo-tool = "demo_tool.cli:main"
+
+[tool.setuptools]
+packages = ["demo_tool"]
