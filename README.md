@@ -17,12 +17,22 @@
 
 ## 预览
 
-说明书封面、正文内页与源程序文档封面。仓库自带编译好的 `document.pdf` 和 `source-code.pdf`，克隆后可直接打开看成品；正文各章也已写示范内容，换成自己的软件后能重新编译。
+仓库自带编译好的`document.pdf`和`source-code.pdf`，克隆后直接打开看成品。每种文档各放封面与两页正文。
+
+**说明书**：命令行使用页带代码框，界面使用页带操作截图。
 
 <p align="center">
   <img src="assets/handbook-cover.png" alt="说明书封面" width="280">
-  <img src="assets/inner-page.png" alt="说明书正文内页" width="280">
+  <img src="assets/inner-page.png" alt="说明书命令行使用页" width="280">
+  <img src="assets/gui-page.png" alt="说明书界面使用页" width="280">
+</p>
+
+**源程序文档**：纯白底无框代码排版，按模块连续排列。
+
+<p align="center">
   <img src="assets/sourcecode-cover.png" alt="源程序文档封面" width="280">
+  <img src="assets/sourcecode-page1.png" alt="源程序文档命令行入口页" width="280">
+  <img src="assets/sourcecode-page2.png" alt="源程序文档核心处理页" width="280">
 </p>
 
 ## 这套模板解决什么
